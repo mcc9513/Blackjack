@@ -23,7 +23,7 @@ public enum Rank {
         this.rankValue=rankValue;
     }
 
-    public String toString(){
+    public String toString(){ //allows you to customize how the enum constant is displayed
         return rankName;
     }
 
