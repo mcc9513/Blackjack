@@ -1,142 +1,42 @@
+// Import necessary packages
+import java.util.ArrayList;
+import java.util.List;
+
+// Declare the Game class
 public class Game {
 
-    //Declare variables needed for Game class
-    private Deck deck;
-    private Deck discarded;
+    // Declare the instance variables for players, dealer, and deck
+    private final List<Player> players;
+    private final Dealer dealer;
+    private final Deck deck;
 
-    private Dealer dealer;
-    private Player player;
-    private int wins, losses, pushes;
-
-
-
-    public Game(){
-
-        //Create a new deck with 52 cards
-        deck = new Deck(true);
-        //Create a new empty deck
-         discarded = new Deck();
-
-        //Create the People
-        dealer = new Dealer();
-        player = new Player();
-
-
-        //Shuffle the deck and start the first round
-        deck.shuffle();
-        startRound();
+    // Constructor to initialize the game with a dealer and a deck
+    public Game(Dealer dealer) {
+        this.players = new ArrayList<>(); // Initialize the list of players
+        this.dealer = dealer; // Set the dealer
+        this.deck = new Deck(); // Create a new deck
+        this.deck.shuffle(); // Shuffle the deck
     }
 
+    // Method to add a player to the game
+    public void addPlayer(Player player) {
+        players.add(player); // Add the player to the list of players
+    }
 
-    /**
-     * Start a new round, display score, give out cards, check for BlackJack, ask player what they want to do
-     */
-    private void startRound(){
+    // Method to start the game by dealing cards
+    public void startGame() {
+        dealer.dealCards(players, deck); // The dealer deals cards to all players
+        dealer.dealCards(List.of(dealer), deck); // The dealer deals cards to themselves
+    }
 
-        if(wins>0 || losses>0 || pushes > 0){
-            System.out.println();
-            System.out.println("Starting Next Round... Wins: " + wins + " Losses: "+ losses+ " Pushes: "+pushes);
-            dealer.getHand().discardHandToDeck(discarded);
-            player.getHand().discardHandToDeck(discarded);
-        }
-
-        //Check to make sure the deck has at least 4 cards left
-        if(deck.cardsLeft() < 4){
-            deck.reloadDeckFromDiscard(discarded);
-        }
-        player.setCurrentBet(player.placeBet(player.getBalance()));
-
-        //Give the dealer two cards
-        dealer.getHand().takeCardFromDeck(deck);
-        dealer.getHand().takeCardFromDeck(deck);
-
-        //Give the player two cards
-        player.getHand().takeCardFromDeck(deck);
-        player.getHand().takeCardFromDeck(deck);
-
-
-        //Show the dealers hand with one card face down
-        dealer.printFirstHand();
-
-        //Show the player's hand
-        player.printHand();
-
-        //Check if dealer has BlackJack to start
-        if(dealer.hasBlackjack()){
-            //Show the dealer has BlackJack
-            dealer.printHand();
-
-            //Check if the player also has BlackJack
-            if(player.hasBlackjack()){
-                //End the round with a push
-                System.out.println("You both have 21 - Push.");
-                pushes++;
-                startRound();
-            }
-            else{
-                System.out.println("Dealer has BlackJack. You lose.");
-                dealer.printHand();
-                losses++;
-                startRound();
+    // Method to determine the winner based on the highest hand value
+    public Player determineWinner() {
+        Player winner = players.get(0); // Assume the first player is the winner initially
+        for (Player player : players) { // Loop through each player
+            if (player.getHandValue() > winner.getHandValue()) { // Compare hand values
+                winner = player; // Update the winner if the current player has a higher hand value
             }
         }
-
-        //Check if player has blackjack to start
-        //If we got to this point, we already know the dealer didn't have blackjack
-        if(player.hasBlackjack()){
-            System.out.println("You have Blackjack! You win!");
-            wins++;
-            startRound();
-        }
-        if (player.doubleDown()) {
-            player.setCurrentBet(player.getCurrentBet() * 2);
-        }
-        //Let the player decide what to do next
-        player.makeDecision(deck, discarded);
-
-        //Check if they busted
-        if(player.getHand().calculatedValue() > 21){
-            System.out.println("You have gone over 21.");
-            losses ++;
-            startRound();
-        }
-
-        //Now it's the dealer's turn
-        dealer.printHand();
-        while(dealer.getHand().calculatedValue()<17){
-            dealer.hit(deck, discarded);
-        }
-
-        //Check who wins
-        if(dealer.getHand().calculatedValue()>21){
-            System.out.println("Dealer busts");
-            wins++;
-        }
-        else if(dealer.getHand().calculatedValue() > player.getHand().calculatedValue()){
-            System.out.println("You lose.");
-            losses++;
-        }
-        else if(player.getHand().calculatedValue() > dealer.getHand().calculatedValue()){
-            System.out.println("You win.");
-            wins++;
-        }
-        else{
-            System.out.println("Push.");
-            pushes++;
-
-        }
-
-        //Start a new round
-        startRound();
+        return winner; // Return the winner
     }
-
-
-    public static void pause(){
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
