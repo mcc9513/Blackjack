@@ -1,135 +1,32 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
+import java.util.List;
 
-public class Deck{
+public class Deck {
 
-    private ArrayList<Card> deck;
+    // Declare a list to hold the cards in the deck
+    private final List<Card> cards;
 
+    // Constructor to initialize the deck with all 52 cards
     public Deck() {
-        deck = new ArrayList<Card>();
-    }
-
-    public Deck(Deck c){
-        Collections.copy(this.deck, c.getCards());
-    }
-
-    //create a standard deck of cards
-    public Deck(boolean makeDeck){
-        deck = new ArrayList<Card>();
-        if(makeDeck){
-            //Go through all the suits
-            for(Suit suit : Suit.values()){
-                //Go through all the ranks
-                for(Rank rank : Rank.values()){
-                    //add a new card containing each iterations suit and rank
-                    deck.add(new Card(rank, suit));
-                }
+        cards = new ArrayList<>(); // Initialize the list
+        for (Suit suit : Suit.values()) { // Loop through each suit
+            for (Rank rank : Rank.values()) { // Loop through each rank
+                cards.add(new Card(rank, suit)); // Add a new card to the deck for each combination of rank and suit
             }
         }
     }
 
-    /**
-     *
-     * @param card The card being added to this deck
-     */
-    public void addCard(Card card){
-        deck.add(card);
+    // Method to shuffle the deck
+    public void shuffle() {
+        Collections.shuffle(cards); // Shuffle the list of cards
     }
 
-    /**
-     *
-     * @param cards an arraylist of cards to be added to this deck
-     */
-    public void addCards(ArrayList<Card> cards){
-        deck.addAll(cards);
-    }
-
-    /**
-     *
-     * @return Every value of the deck as a String with line separators
-     */
-    public String toString(){
-        //A string to hold everything we're going to return
-        String output = "";
-
-        for(Card card: deck){
-            output += card;
-            output += "\n";
+    // Method to deal a card from the deck
+    public Card dealCard() {
+        if (cards.isEmpty()) { // Check if the deck is empty
+            throw new IllegalStateException("No cards left in the deck"); // Throw an exception if the deck is empty
         }
-        return output;
+        return cards.remove(0); // Remove and return the first card in the deck
     }
-
-    /**
-     * Shuffle the deck of Cards at random
-     */
-    public void shuffle(){
-        Collections.shuffle(deck, new Random());
-    }
-
-    /**
-     *
-     * @return The card taken from the deck
-     */
-    public Card takeCard(){
-
-        //Take a copy of the first card from the deck
-        Card cardToTake = new Card(deck.get(0));
-        //Remove the card from the deck
-        deck.remove(0);
-        //Give the card back
-        return cardToTake;
-
-    }
-
-    /**
-     *
-     * @return true if the deck still has cards left
-     */
-    public boolean hasCards(){
-        if (deck.size()>0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    /**
-     *
-     * @return The number of cards left in the deck
-     */
-    public int cardsLeft(){
-        return deck.size();
-    }
-
-    /**
-     *
-     * @return the arraylist containing all the cards in this deck
-     */
-    public ArrayList<Card> getCards() {
-        return deck;
-    }
-
-    /**
-     * Empties out this Deck
-     */
-    public void emptyDeck(){
-        deck.clear();
-    }
-
-
-    /**
-     * Take all the cards from a discarded deck and place them in this deck, shuffled.
-     * Clear the old deck
-     * @param discard - the deck we're getting the cards from
-     */
-    public void reloadDeckFromDiscard(Deck discard){
-        this.addCards(discard.getCards());
-        this.shuffle();
-        discard.emptyDeck();
-        System.out.println("Ran out of cards, creating new deck from discard pile & shuffling deck.");
-    }
-
-
 }
