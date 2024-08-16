@@ -1,43 +1,33 @@
+// Declare Person as abstract
 public abstract class Person {
 
-    private Hand hand;
-    private String name;
+    // Declare the instance variables for name and hand
+    private final String name;
+    private final Hand hand;
 
-    public Person() {
-        this.hand = new Hand();
-        this.name = "";
+    // Constructor to initialize the person's name and hand
+    public Person(String name) {
+        this.name = name; // Set the name
+        this.hand = new Hand(); // Create a new hand
     }
 
-
-    public Hand getHand() {
-        return this.hand;
-    }
-
-    public void setHand(Hand hand) {
-        this.hand = hand;
-    }
-
+    // Method to get the person's name
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-
+    // Method to get the person's hand
+    public Hand getHand() {
+        return hand;
     }
-    public void printHand(){
-        System.out.println(this.name + "'s hand looks like this:");
-        System.out.println(this.hand + " Valued at: " + this.hand.calculatedValue());
+
+    // Method to get the value of the person's hand
+    public int getHandValue() {
+        return hand.calculateHandValue();
     }
-    public void hit(Deck deck, Deck discard){
 
-        //If there's no cards left in the deck
-        if (!deck.hasCards()) {
-            deck.reloadDeckFromDiscard(discard);
-        }
-        this.hand.takeCardFromDeck(deck);
-        System.out.println(this.name + " gets a card");
-        this.printHand();
-
+    // Method to add a card to the person's hand
+    public void addCardToHand(Card card) {
+        hand.addCard(card); 
     }
 }
